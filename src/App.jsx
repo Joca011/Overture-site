@@ -205,7 +205,7 @@ function Hero() {
           />
           <span className="hero__rotator">
             <RotatingText
-              texts={['sites', 'landing pages', 'e-commerces']}
+              texts={['sites', 'landing pages', 'identidades']}
               rotationInterval={2600}
               effect="blur"
               staggerDuration={0.025}
@@ -252,10 +252,6 @@ function Hero() {
         </motion.div>
       </motion.div>
 
-      <div className="hero__scroll" aria-hidden="true">
-        <span>Role</span>
-        <i />
-      </div>
     </section>
   );
 }
@@ -265,7 +261,7 @@ function Marquee() {
   return (
     <section className="marquee" aria-label="O que fazemos">
       <ScrollVelocity
-        texts={['Sites ✦ Landing pages ✦ E-commerces ✦ Branding ✦', 'Design estratégico ✦ Performance ✦ Resultado ✦']}
+        texts={['Sites ✦ Landing pages ✦ Branding ✦ Identidade visual ✦', 'Design estratégico ✦ Performance ✦ Resultado ✦']}
         velocity={55}
         className="marquee__text"
         outlineAlternate
@@ -292,7 +288,7 @@ function Manifesto() {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start 0.85', 'end 0.55'] });
   const words =
-    'Uma boa abertura define tudo o que vem depois. Por isso desenhamos sites, landing pages e e-commerces com estratégia, estética e performance — para a sua marca entrar em cena com presença e sair com resultado.'.split(
+    'Uma boa abertura define tudo o que vem depois. Por isso desenhamos sites, landing pages e identidades visuais com estratégia, estética e performance — para a sua marca entrar em cena com presença e sair com resultado.'.split(
       ' '
     );
   return (

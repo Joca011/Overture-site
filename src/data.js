@@ -27,12 +27,6 @@ export const SERVICES = [
   },
   {
     n: '03',
-    title: 'E-commerces',
-    text: 'Lojas virtuais com experiência de compra fluida, vitrine impecável e estrutura pronta para vender.',
-    tags: ['Loja virtual', 'Checkout', 'Integrações']
-  },
-  {
-    n: '04',
     title: 'Branding & identidade',
     text: 'Logo, sistema visual e direção criativa para a sua marca ser reconhecida em qualquer ponto de contato.',
     tags: ['Logo', 'Identidade', 'Direção de arte']
@@ -45,14 +39,14 @@ export const WORK_CATEGORIES = ['Todos', 'Saúde & beleza', 'Alimentação', 'Se
 export const WORKS = [
   { slug: 'sorriso-perfeito', name: 'Sorriso Perfeito', segment: 'Clínica odontológica', kind: 'Site institucional', cat: 'Saúde & beleza' },
   { slug: 'bella-rosa', name: 'Studio Bella Rosa', segment: 'Estética & beleza', kind: 'Landing page', cat: 'Saúde & beleza' },
-  { slug: 'forno-nobre', name: 'Forno Nobre', segment: 'Pizzaria', kind: 'E-commerce', cat: 'Alimentação' },
+  { slug: 'forno-nobre', name: 'Forno Nobre', segment: 'Pizzaria', kind: 'Site de pedidos', cat: 'Alimentação' },
   { slug: 'navde-rafael', name: 'Navde Rafael', segment: 'Advocacia', kind: 'Site institucional', cat: 'Serviços' },
   { slug: 'acai-tropical', name: 'Açaí Tropical', segment: 'Açaiteria', kind: 'Delivery', cat: 'Alimentação' },
   { slug: 'pao-de-ouro', name: 'Padaria Pão de Ouro', segment: 'Padaria', kind: 'Site institucional', cat: 'Alimentação' },
   { slug: 'saia-do-mesmo', name: 'Rafael Almeida', segment: 'Personal trainer', kind: 'Landing page', cat: 'Saúde & beleza' },
   { slug: 'fps-lab', name: 'FPS Lab', segment: 'Otimização para games', kind: 'Landing page', cat: 'Varejo & tech' },
   { slug: 'doce-encanto', name: 'Doce Encanto', segment: 'Confeitaria', kind: 'Site institucional', cat: 'Alimentação' },
-  { slug: 'moda-atelie', name: 'Moda Ateliê', segment: 'Loja de roupas', kind: 'E-commerce', cat: 'Varejo & tech' },
+  { slug: 'moda-atelie', name: 'Moda Ateliê', segment: 'Loja de roupas', kind: 'Landing page', cat: 'Varejo & tech' },
   { slug: 'grafica-impacto', name: 'Gráfica Impacto', segment: 'Gráfica', kind: 'Site institucional', cat: 'Serviços' },
   { slug: 'power-fit', name: 'Power Fit Academia', segment: 'Academia', kind: 'Landing page', cat: 'Saúde & beleza' },
   { slug: 'cartorio-santa-luzia', name: 'Cartório Santa Luzia', segment: 'Cartório', kind: 'Site institucional', cat: 'Serviços' },

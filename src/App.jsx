@@ -41,7 +41,7 @@ function useSmoothScroll() {
       const el = document.querySelector(id);
       if (!el) return;
       e.preventDefault();
-      lenis.scrollTo(el, { offset: -20, duration: 1.4 });
+      lenis.scrollTo(el, { offset: -90, duration: 1.4, force: true });
     };
     document.addEventListener('click', onAnchor);
     return () => {
@@ -57,15 +57,32 @@ function Nav() {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
   const [solid, setSolid] = useState(false);
+  const [menu, setMenu] = useState(false);
   useMotionValueEvent(scrollY, 'change', y => {
     const prev = scrollY.getPrevious() ?? 0;
     setHidden(y > prev && y > 160);
     setSolid(y > 40);
   });
+  useEffect(() => {
+    if (!menu) return;
+    window.__lenis?.stop();
+    document.documentElement.style.overflow = 'hidden';
+    const onKey = e => e.key === 'Escape' && setMenu(false);
+    const onResize = () => window.innerWidth > 760 && setMenu(false);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.__lenis?.start();
+      document.documentElement.style.overflow = '';
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [menu]);
   return (
+    <>
     <motion.header
-      className={`nav ${solid ? 'nav--solid' : ''}`}
-      animate={{ y: hidden ? '-110%' : 0 }}
+      className={`nav ${solid || menu ? 'nav--solid' : ''}`}
+      animate={{ y: hidden && !menu ? '-110%' : 0 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
     >
       <a href="#topo" className="nav__logo" aria-label="Overture — início">
@@ -78,12 +95,68 @@ function Nav() {
           </a>
         ))}
       </nav>
-      <Magnet padding={60} magnetStrength={3}>
-        <a href="#contato" className="btn btn--sm">
-          Vamos conversar
-        </a>
-      </Magnet>
+      <div className="nav__right">
+        <Magnet padding={60} magnetStrength={3}>
+          <a href="#contato" className="btn btn--sm">
+            Vamos conversar
+          </a>
+        </Magnet>
+        <button
+          type="button"
+          className={`nav__burger ${menu ? 'is-open' : ''}`}
+          aria-expanded={menu}
+          aria-controls="menu-mobile"
+          aria-label={menu ? 'Fechar menu' : 'Abrir menu'}
+          onClick={() => setMenu(m => !m)}
+        >
+          <span />
+          <span />
+        </button>
+      </div>
     </motion.header>
+    <AnimatePresence>
+      {menu && (
+        <motion.nav
+          id="menu-mobile"
+          className="mmenu"
+          aria-label="Menu"
+          initial={{ clipPath: 'inset(0 0 100% 0)' }}
+          animate={{ clipPath: 'inset(0 0 0% 0)' }}
+          exit={{ clipPath: 'inset(0 0 100% 0)' }}
+          transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
+        >
+          <ul>
+            {NAV.map((l, i) => (
+              <motion.li
+                key={l.href}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 + i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <a href={l.href} onClick={() => setMenu(false)}>
+                  <span>{String(i + 1).padStart(2, '0')}</span>
+                  {l.label}
+                </a>
+              </motion.li>
+            ))}
+          </ul>
+          <motion.div
+            className="mmenu__foot"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.45 }}
+          >
+            <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer">
+              WhatsApp ↗
+            </a>
+            <a href={CONTACT.discord} target="_blank" rel="noreferrer">
+              Discord ↗
+            </a>
+          </motion.div>
+        </motion.nav>
+      )}
+    </AnimatePresence>
+    </>
   );
 }
 
@@ -285,7 +358,7 @@ function Services() {
         baseScale={0.86}
         itemScale={0.03}
         dimAmount={0.35}
-        holdDistance={120}
+        holdDistance={40}
       >
         {SERVICES.map(s => (
           <ScrollStackItem key={s.n} itemClassName="svc">
@@ -314,6 +387,12 @@ const img = (w, size = '') => `work/${w.slug}${size}.webp`;
 
 function Lightbox({ index, onClose, onNav }) {
   const w = WORKS[index];
+  const closeRef = useRef(null);
+  useEffect(() => {
+    const previous = document.activeElement;
+    closeRef.current?.focus({ preventScroll: true });
+    return () => previous?.focus?.({ preventScroll: true });
+  }, []);
   useEffect(() => {
     const onKey = e => {
       if (e.key === 'Escape') onClose();
@@ -368,7 +447,7 @@ function Lightbox({ index, onClose, onNav }) {
       <button className="lb__btn lb__btn--next" aria-label="Próximo projeto" onClick={e => (e.stopPropagation(), onNav(1))}>
         →
       </button>
-      <button className="lb__close" aria-label="Fechar" onClick={onClose}>
+      <button ref={closeRef} className="lb__close" aria-label="Fechar" onClick={onClose}>
         ✕
       </button>
     </motion.div>
@@ -442,12 +521,12 @@ function Projects() {
       </div>
 
       <div className="wrap portfolio" id="portfolio">
-        <div className="chips" role="tablist" aria-label="Filtrar projetos por área">
+        <div className="chips" role="group" aria-label="Filtrar projetos por área">
           {WORK_CATEGORIES.map(c => (
             <button
               key={c}
-              role="tab"
-              aria-selected={filter === c}
+              type="button"
+              aria-pressed={filter === c}
               className={`chip ${filter === c ? 'chip--on' : ''}`}
               onClick={() => setFilter(c)}
             >
@@ -494,12 +573,13 @@ function Projects() {
 }
 
 /* ───────── Segmentos ───────── */
+const SEGMENT_LOGOS = SEGMENTS.map(s => ({ node: <span className="seg">{s}</span>, title: s }));
+
 function Segments() {
-  const logos = SEGMENTS.map(s => ({ node: <span className="seg">{s}</span>, title: s }));
   return (
     <section className="segments" aria-label="Segmentos atendidos">
       <p className="label wrap">( Segmentos que já vestimos )</p>
-      <LogoLoop logos={logos} speed={70} gap={56} logoHeight={44} fadeOut pauseOnHover scrollBoost={1} />
+      <LogoLoop logos={SEGMENT_LOGOS} speed={70} gap={56} logoHeight={44} fadeOut pauseOnHover scrollBoost={1} />
     </section>
   );
 }

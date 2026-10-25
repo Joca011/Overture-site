@@ -622,7 +622,7 @@
 }
 .pgrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(20px, 2.6vw, 36px) clamp(16px, 2vw, 28px);
 }
 .pcard {
@@ -697,11 +697,6 @@
   font-family: var(--serif);
   font-size: 1.05rem;
   color: #cfcfcf;
-}
-@media (max-width: 1000px) {
-  .pgrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 @media (max-width: 600px) {
   .pgrid {

@@ -452,10 +452,12 @@ function Lightbox({ index, onClose, onNav }) {
 function Projects() {
   const [filter, setFilter] = useState('Todos');
   const [open, setOpen] = useState(null);
-  const list = filter === 'Todos' ? WORKS : WORKS.filter(w => w.cat === filter);
+  // A grade mostra todos menos o último (que aparece só nas fileiras em movimento), para fechar em pares.
+  const gridWorks = WORKS.slice(0, -1);
+  const list = filter === 'Todos' ? gridWorks : gridWorks.filter(w => w.cat === filter);
   const rowLogos = useMemo(
     () =>
-      [WORKS.slice(0, 5), WORKS.slice(5, 10), WORKS.slice(10, 15)].map(row =>
+      [WORKS.slice(0, 5), WORKS.slice(5, 10), WORKS.slice(10)].map(row =>
         row.map(w => ({
           title: w.name,
           ariaLabel: w.name,
@@ -543,7 +545,7 @@ function Projects() {
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, margin: '-60px' }}
                 exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
-                transition={{ duration: 0.6, delay: (i % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.6, delay: (i % 2) * 0.08, ease: [0.22, 1, 0.36, 1] }}
               >
                 <span className="pcard__media">
                   <img src={img(w, '-sm')} alt={`Página ${w.name}`} loading="lazy" />

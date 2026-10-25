@@ -26,6 +26,7 @@
 }
 
 /* ───── Botões ───── */
+/* Só preto, branco e cinzas (paleta da Overture). Hover simples: sobe 2px, sem invadir o vizinho. */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -38,11 +39,23 @@
   font-size: 1rem;
   letter-spacing: -0.01em;
   border: 1px solid var(--fg);
-  transition: background 0.3s, color 0.3s;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn > span[aria-hidden='true'] {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .btn:hover {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: #e6e6e6;
+  border-color: #e6e6e6;
+  transform: translateY(-2px);
+}
+.btn:hover > span[aria-hidden='true'] {
+  transform: translateX(3px);
+}
+.btn:active {
+  transform: translateY(0);
 }
 .btn--sm {
   padding: 10px 20px;
@@ -61,6 +74,16 @@
   background: var(--fg);
   color: var(--bg);
   border-color: var(--fg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn > span[aria-hidden='true'] {
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  }
+  .btn:hover,
+  .btn:hover > span[aria-hidden='true'] {
+    transform: none;
+  }
 }
 
 /* ───── Nav ───── */
@@ -138,7 +161,7 @@
 .mmenu a:focus-visible,
 .btn:focus-visible,
 .nav__link:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--fg);
   outline-offset: 3px;
 }
 .mmenu {
@@ -241,8 +264,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 14px var(--accent);
+  background: var(--fg);
 }
 .hero__title {
   margin: 0;
@@ -546,7 +568,7 @@
   transform: none;
 }
 .mcard:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--fg);
   outline-offset: 2px;
 }
 
@@ -595,7 +617,7 @@
 .chip:focus-visible,
 .pcard:focus-visible,
 .lb button:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--fg);
   outline-offset: 3px;
 }
 .pgrid {

@@ -13,7 +13,6 @@ import ScrollVelocity from './rb/ScrollVelocity';
 import CountUp from './rb/CountUp';
 import ScrollStack, { ScrollStackItem } from './rb/ScrollStack';
 import SpotlightCard from './rb/SpotlightCard';
-import Magnet from './rb/Magnet';
 import LogoLoop from './rb/LogoLoop';
 import AnimatedContent from './rb/AnimatedContent';
 import ClickSpark from './rb/ClickSpark';
@@ -96,11 +95,9 @@ function Nav() {
         ))}
       </nav>
       <div className="nav__right">
-        <Magnet padding={60} magnetStrength={3}>
-          <a href="#contato" className="btn btn--sm">
-            Vamos conversar
-          </a>
-        </Magnet>
+        <a href="#contato" className="btn btn--sm">
+          Vamos conversar
+        </a>
         <button
           type="button"
           className={`nav__burger ${menu ? 'is-open' : ''}`}
@@ -246,11 +243,9 @@ function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Magnet padding={80} magnetStrength={3}>
-            <a href="#contato" className="btn">
-              Iniciar um projeto <span aria-hidden="true">→</span>
-            </a>
-          </Magnet>
+          <a href="#contato" className="btn">
+            Iniciar um projeto <span aria-hidden="true">→</span>
+          </a>
           <a href="#projetos" className="btn btn--ghost">
             Ver projetos
           </a>
@@ -639,16 +634,12 @@ function Contact() {
           />
         </h2>
         <div className="contact__actions">
-          <Magnet padding={100} magnetStrength={3}>
-            <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" className="btn btn--lg">
-              Entrar no grupo do WhatsApp <span aria-hidden="true">↗</span>
-            </a>
-          </Magnet>
-          <Magnet padding={80} magnetStrength={3}>
-            <a href={CONTACT.discord} target="_blank" rel="noreferrer" className="btn btn--lg btn--ghost">
-              Comunidade no Discord <span aria-hidden="true">↗</span>
-            </a>
-          </Magnet>
+          <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" className="btn btn--lg">
+            Entrar no grupo do WhatsApp <span aria-hidden="true">↗</span>
+          </a>
+          <a href={CONTACT.discord} target="_blank" rel="noreferrer" className="btn btn--lg btn--ghost">
+            Comunidade no Discord <span aria-hidden="true">↗</span>
+          </a>
         </div>
       </div>
 

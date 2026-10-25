@@ -11,11 +11,10 @@ npm run build    # produção -> dist/
 
 ## Editar conteúdo
 Textos, links e contatos ficam em `src/data.js` (WhatsApp, Discord, serviços, projetos, segmentos, etapas e números).
-Imagens dos projetos ficam em `public/work/` (hoje são recortes do reel; troque por prints em alta).
-O reel fica em `public/reel.mp4`.
-
-## Cursor quadrado
-Qualquer elemento com a classe `cursor-target` ganha o cursor de cantos (TargetCursor) no hover.
+## Portfólio
+Cada projeto é uma entrada em `WORKS` (`src/data.js`) com duas imagens em `public/work/`:
+`<slug>.webp` (1600px, usada na visualização ampliada) e `<slug>-sm.webp` (720px, usada na parede animada e na grade).
+Para adicionar um projeto, gere as duas imagens em WebP, coloque em `public/work/` e acrescente a entrada em `WORKS`.
 
 ## Deploy
 Cada push na branch `main` publica automaticamente na Vercel.

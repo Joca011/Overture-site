@@ -39,13 +39,28 @@ export const SERVICES = [
   }
 ];
 
+export const WORK_CATEGORIES = ['Todos', 'Saúde & beleza', 'Alimentação', 'Serviços', 'Varejo & tech'];
+
+// Telas dos projetos ficam em public/work/<slug>.webp (grande) e <slug>-sm.webp (miniatura).
 export const WORKS = [
-  { img: 'work/bella.webp', name: 'Studio Bella Rosa', segment: 'Estética & beleza', kind: 'Landing page' },
-  { img: 'work/sorriso.webp', name: 'Sorriso Perfeito', segment: 'Clínica odontológica', kind: 'Site institucional' },
-  { img: 'work/navde.webp', name: 'Navde Rafael', segment: 'Advocacia', kind: 'Site institucional' }
+  { slug: 'sorriso-perfeito', name: 'Sorriso Perfeito', segment: 'Clínica odontológica', kind: 'Site institucional', cat: 'Saúde & beleza' },
+  { slug: 'bella-rosa', name: 'Studio Bella Rosa', segment: 'Estética & beleza', kind: 'Landing page', cat: 'Saúde & beleza' },
+  { slug: 'forno-nobre', name: 'Forno Nobre', segment: 'Pizzaria', kind: 'E-commerce', cat: 'Alimentação' },
+  { slug: 'navde-rafael', name: 'Navde Rafael', segment: 'Advocacia', kind: 'Site institucional', cat: 'Serviços' },
+  { slug: 'acai-tropical', name: 'Açaí Tropical', segment: 'Açaiteria', kind: 'Delivery', cat: 'Alimentação' },
+  { slug: 'pao-de-ouro', name: 'Padaria Pão de Ouro', segment: 'Padaria', kind: 'Site institucional', cat: 'Alimentação' },
+  { slug: 'saia-do-mesmo', name: 'Rafael Almeida', segment: 'Personal trainer', kind: 'Landing page', cat: 'Saúde & beleza' },
+  { slug: 'fps-lab', name: 'FPS Lab', segment: 'Otimização para games', kind: 'Landing page', cat: 'Varejo & tech' },
+  { slug: 'doce-encanto', name: 'Doce Encanto', segment: 'Confeitaria', kind: 'Site institucional', cat: 'Alimentação' },
+  { slug: 'moda-atelie', name: 'Moda Ateliê', segment: 'Loja de roupas', kind: 'E-commerce', cat: 'Varejo & tech' },
+  { slug: 'grafica-impacto', name: 'Gráfica Impacto', segment: 'Gráfica', kind: 'Site institucional', cat: 'Serviços' },
+  { slug: 'power-fit', name: 'Power Fit Academia', segment: 'Academia', kind: 'Landing page', cat: 'Saúde & beleza' },
+  { slug: 'cartorio-santa-luzia', name: 'Cartório Santa Luzia', segment: 'Cartório', kind: 'Site institucional', cat: 'Serviços' },
+  { slug: 'radio-ritmo', name: 'Rádio Ritmo FM', segment: 'Rádio', kind: 'Site institucional', cat: 'Serviços' },
+  { slug: 'cel-fix', name: 'Cel Fix', segment: 'Assistência e loja de celulares', kind: 'Site institucional', cat: 'Varejo & tech' }
 ];
 
-export const SEGMENTS = ['Odontologia', 'Estética', 'Gastronomia', 'Advocacia', 'Fitness', 'Saúde', 'Varejo', 'Serviços'];
+export const SEGMENTS = ['Odontologia', 'Estética', 'Gastronomia', 'Advocacia', 'Fitness', 'Padaria', 'Açaí', 'Confeitaria', 'Moda', 'Gráfica', 'Cartório', 'Rádio', 'Games', 'Assistência técnica'];
 
 export const STEPS = [
   { n: '01', title: 'Imersão', text: 'Entendemos o seu negócio, público e objetivos para traçar a estratégia certa.' },

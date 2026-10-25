@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from 'motion/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence, useInView, useScroll, useTransform, useMotionValueEvent } from 'motion/react';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -13,14 +13,13 @@ import ScrollVelocity from './rb/ScrollVelocity';
 import CountUp from './rb/CountUp';
 import ScrollStack, { ScrollStackItem } from './rb/ScrollStack';
 import SpotlightCard from './rb/SpotlightCard';
-import TiltedCard from './rb/TiltedCard';
+import DriftWall from './rb/DriftWall';
 import Magnet from './rb/Magnet';
 import LogoLoop from './rb/LogoLoop';
 import AnimatedContent from './rb/AnimatedContent';
 import ClickSpark from './rb/ClickSpark';
-import TargetCursor from './rb/TargetCursor';
 
-import { CONTACT, NAV, SERVICES, WORKS, SEGMENTS, STEPS, STATS } from './data';
+import { CONTACT, NAV, SERVICES, WORKS, WORK_CATEGORIES, SEGMENTS, STEPS, STATS } from './data';
 import './App.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -30,6 +29,7 @@ function useSmoothScroll() {
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 1 });
+    window.__lenis = lenis;
     lenis.on('scroll', ScrollTrigger.update);
     const tick = time => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
@@ -69,18 +69,18 @@ function Nav() {
       animate={{ y: hidden ? '-110%' : 0 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
     >
-      <a href="#topo" className="nav__logo cursor-target" aria-label="Overture — início">
+      <a href="#topo" className="nav__logo" aria-label="Overture — início">
         <img src="logo.svg" alt="Overture Agência Criativa" />
       </a>
       <nav className="nav__links" aria-label="Principal">
         {NAV.map(l => (
-          <a key={l.href} href={l.href} className="nav__link cursor-target">
+          <a key={l.href} href={l.href} className="nav__link">
             {l.label}
           </a>
         ))}
       </nav>
       <Magnet padding={60} magnetStrength={3}>
-        <a href="#contato" className="btn btn--sm cursor-target">
+        <a href="#contato" className="btn btn--sm">
           Vamos conversar
         </a>
       </Magnet>
@@ -175,11 +175,11 @@ function Hero() {
           transition={{ delay: 1.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
           <Magnet padding={80} magnetStrength={3}>
-            <a href="#contato" className="btn cursor-target">
+            <a href="#contato" className="btn">
               Iniciar um projeto <span aria-hidden="true">→</span>
             </a>
           </Magnet>
-          <a href="#projetos" className="btn btn--ghost cursor-target">
+          <a href="#projetos" className="btn btn--ghost">
             Ver projetos
           </a>
         </motion.div>
@@ -245,7 +245,7 @@ function Manifesto() {
       <div className="stats">
         {STATS.map((s, i) => (
           <AnimatedContent key={s.label} distance={40} delay={i * 0.12} duration={0.9}>
-            <div className="stat cursor-target">
+            <div className="stat">
               <div className="stat__num">
                 <CountUp to={s.to} duration={1.8} />
                 <span className="stat__suffix">{s.suffix}</span>
@@ -289,7 +289,7 @@ function Services() {
         holdDistance={120}
       >
         {SERVICES.map(s => (
-          <ScrollStackItem key={s.n} itemClassName="svc cursor-target">
+          <ScrollStackItem key={s.n} itemClassName="svc">
             <div className="svc__top">
               <span className="svc__n">{s.n}</span>
               <span className="svc__arrow" aria-hidden="true">↗</span>
@@ -310,80 +310,182 @@ function Services() {
   );
 }
 
-/* ───────── Projetos (TiltedCard + parallax por coluna) ───────── */
-function Projects() {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
-  const ys = [
-    useTransform(scrollYProgress, [0, 1], [90, -90]),
-    useTransform(scrollYProgress, [0, 1], [-30, 130]),
-    useTransform(scrollYProgress, [0, 1], [120, -60])
-  ];
-  const sy = useSpring(useTransform(scrollYProgress, [0, 1], [60, -140]), { stiffness: 80, damping: 20 });
+/* ───────── Projetos (DriftWall + grade filtrável + visualização ampliada) ───────── */
+const img = (w, size = '') => `work/${w.slug}${size}.webp`;
+
+function Lightbox({ index, onClose, onNav }) {
+  const w = WORKS[index];
+  useEffect(() => {
+    const onKey = e => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') onNav(1);
+      if (e.key === 'ArrowLeft') onNav(-1);
+    };
+    window.addEventListener('keydown', onKey);
+    window.__lenis?.stop();
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.__lenis?.start();
+      document.documentElement.style.overflow = '';
+    };
+  }, [onClose, onNav]);
 
   return (
-    <section className="projects" id="projetos" ref={ref}>
-      <div className="wrap">
-        <p className="label">( Projetos )</p>
-        <h2 className="h2">
-          <SplitText
-            tag="span"
-            text="Trabalhos que abrem caminho"
-            splitType="words"
-            delay={80}
-            textAlign="left"
-            effect="blur"
-            className="h2__split"
-          />
-        </h2>
-
-        <div className="projects__grid">
-          <div className="projects__cards">
-            {WORKS.map((w, i) => (
-              <motion.figure key={w.name} className={`work work--${i}`} style={{ y: ys[i] }}>
-                <div className="work__media cursor-target">
-                <TiltedCard
-                  imageSrc={w.img}
-                  altText={w.name}
-                  containerHeight="100%"
-                  containerWidth="100%"
-                  imageHeight="100%"
-                  imageWidth="100%"
-                  rotateAmplitude={10}
-                  scaleOnHover={1.04}
-                  radius={18}
-                  glare={0.35}
-                  showTooltip={false}
-                  flipOnClick={false}
-                  gyroscope={false}
-                />
-                </div>
-                <figcaption className="work__cap">
-                  <div>
-                    <strong>{w.name}</strong>
-                    <span>{w.segment}</span>
-                  </div>
-                  <em>{w.kind}</em>
-                </figcaption>
-              </motion.figure>
-            ))}
+    <motion.div
+      className="lb"
+      role="dialog"
+      aria-modal="true"
+      aria-label={w.name}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.figure
+        key={w.slug}
+        className="lb__fig"
+        initial={{ opacity: 0, y: 30, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        onClick={e => e.stopPropagation()}
+      >
+        <img src={img(w)} alt={`Página ${w.name}`} />
+        <figcaption className="lb__cap">
+          <div>
+            <strong>{w.name}</strong>
+            <span>
+              {w.segment} · {w.kind}
+            </span>
           </div>
+          <span className="lb__count">
+            {String(index + 1).padStart(2, '0')} / {String(WORKS.length).padStart(2, '0')}
+          </span>
+        </figcaption>
+      </motion.figure>
+      <button className="lb__btn lb__btn--prev" aria-label="Projeto anterior" onClick={e => (e.stopPropagation(), onNav(-1))}>
+        ←
+      </button>
+      <button className="lb__btn lb__btn--next" aria-label="Próximo projeto" onClick={e => (e.stopPropagation(), onNav(1))}>
+        →
+      </button>
+      <button className="lb__close" aria-label="Fechar" onClick={onClose}>
+        ✕
+      </button>
+    </motion.div>
+  );
+}
 
-          <motion.div className="reel" style={{ y: sy }}>
-            <p className="label">( Showreel )</p>
-            <div className="reel__frame cursor-target">
-              <video src="reel.mp4" autoPlay muted loop playsInline preload="metadata" />
-            </div>
-          </motion.div>
+function Projects() {
+  const [filter, setFilter] = useState('Todos');
+  const [open, setOpen] = useState(null);
+  const list = filter === 'Todos' ? WORKS : WORKS.filter(w => w.cat === filter);
+  const wallItems = WORKS.map(w => ({ image: img(w, '-sm'), title: w.name }));
+  const close = useCallback(() => setOpen(null), []);
+  const nav = useCallback(d => setOpen(i => (i + d + WORKS.length) % WORKS.length), []);
+  const wallRef = useRef(null);
+  const wallNear = useInView(wallRef, { margin: '300px 0px' });
+
+  return (
+    <section className="projects" id="projetos">
+      <div className="projects__wall" ref={wallRef}>
+        {wallNear && (
+        <DriftWall
+          items={wallItems}
+          columns={5}
+          tileWidth={360}
+          tileHeight={201}
+          gap={22}
+          radius={14}
+          tilt={20}
+          turn={-14}
+          depth={140}
+          speed={26}
+          variance={0.5}
+          parallax={0.5}
+          lift={50}
+          dim={0.95}
+          fade={0.55}
+          overlayColor="#000000"
+        />
+        )}
+        <div className="projects__intro wrap">
+          <p className="label">( Projetos )</p>
+          <h2 className="h2 projects__title">
+            <SplitText
+              tag="span"
+              text="Sites que criamos na Overture"
+              splitType="words"
+              delay={80}
+              textAlign="left"
+              effect="blur"
+              className="h2__split"
+            />
+          </h2>
+          <p className="projects__lead">
+            {WORKS.length} projetos em {WORK_CATEGORIES.length - 1} áreas: saúde, alimentação, serviços, varejo e tecnologia.
+          </p>
+          <a href="#portfolio" className="btn btn--ghost">
+            Ver todos os projetos ↓
+          </a>
         </div>
       </div>
+
+      <div className="wrap portfolio" id="portfolio">
+        <div className="chips" role="tablist" aria-label="Filtrar projetos por área">
+          {WORK_CATEGORIES.map(c => (
+            <button
+              key={c}
+              role="tab"
+              aria-selected={filter === c}
+              className={`chip ${filter === c ? 'chip--on' : ''}`}
+              onClick={() => setFilter(c)}
+            >
+              {filter === c && <motion.span layoutId="chip-bg" className="chip__bg" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
+              <span className="chip__label">{c}</span>
+            </button>
+          ))}
+        </div>
+
+        <motion.div layout className="pgrid">
+          <AnimatePresence mode="popLayout">
+            {list.map((w, i) => (
+              <motion.button
+                layout
+                key={w.slug}
+                className="pcard"
+                onClick={() => setOpen(WORKS.indexOf(w))}
+                initial={{ opacity: 0, y: 40, scale: 0.96 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: '-60px' }}
+                exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
+                transition={{ duration: 0.6, delay: (i % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span className="pcard__media">
+                  <img src={img(w, '-sm')} alt={`Página ${w.name}`} loading="lazy" />
+                  <span className="pcard__hover">Ver projeto ↗</span>
+                </span>
+                <span className="pcard__cap">
+                  <span>
+                    <strong>{w.name}</strong>
+                    <small>{w.segment}</small>
+                  </span>
+                  <em>{w.kind}</em>
+                </span>
+              </motion.button>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
+      <AnimatePresence>{open !== null && <Lightbox index={open} onClose={close} onNav={nav} />}</AnimatePresence>
     </section>
   );
 }
 
 /* ───────── Segmentos ───────── */
 function Segments() {
-  const logos = SEGMENTS.map(s => ({ node: <span className="seg cursor-target">{s}</span>, title: s }));
+  const logos = SEGMENTS.map(s => ({ node: <span className="seg">{s}</span>, title: s }));
   return (
     <section className="segments" aria-label="Segmentos atendidos">
       <p className="label wrap">( Segmentos que já vestimos )</p>
@@ -411,7 +513,7 @@ function Process() {
       <div className="process__grid">
         {STEPS.map((s, i) => (
           <AnimatedContent key={s.n} distance={60} delay={i * 0.1} duration={0.9} blur={6}>
-            <SpotlightCard className="step cursor-target" spotlightColor="#ffffff" intensity={0.16}>
+            <SpotlightCard className="step" spotlightColor="#ffffff" intensity={0.16}>
               <span className="step__n">{s.n}</span>
               <h3 className="step__title">{s.title}</h3>
               <p className="step__text">{s.text}</p>
@@ -448,12 +550,12 @@ function Contact() {
         </h2>
         <div className="contact__actions">
           <Magnet padding={100} magnetStrength={3}>
-            <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" className="btn btn--lg cursor-target">
+            <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" className="btn btn--lg">
               Entrar no grupo do WhatsApp <span aria-hidden="true">↗</span>
             </a>
           </Magnet>
           <Magnet padding={80} magnetStrength={3}>
-            <a href={CONTACT.discord} target="_blank" rel="noreferrer" className="btn btn--lg btn--ghost cursor-target">
+            <a href={CONTACT.discord} target="_blank" rel="noreferrer" className="btn btn--lg btn--ghost">
               Comunidade no Discord <span aria-hidden="true">↗</span>
             </a>
           </Magnet>
@@ -463,13 +565,13 @@ function Contact() {
       <footer className="footer wrap">
         <img src="logo.svg" alt="Overture Agência Criativa" className="footer__logo" />
         <div className="footer__links">
-          <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" className="cursor-target">
+          <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer">
             WhatsApp
           </a>
-          <a href={CONTACT.discord} target="_blank" rel="noreferrer" className="cursor-target">
+          <a href={CONTACT.discord} target="_blank" rel="noreferrer">
             Discord
           </a>
-          <a href="#topo" className="cursor-target">Voltar ao topo ↑</a>
+          <a href="#topo">Voltar ao topo ↑</a>
         </div>
         <p className="footer__copy">© {new Date().getFullYear()} Overture Agência Criativa. Todos os direitos reservados.</p>
       </footer>
@@ -479,14 +581,9 @@ function Contact() {
 
 export default function App() {
   useSmoothScroll();
-  const [fine, setFine] = useState(false);
-  useEffect(() => {
-    setFine(window.matchMedia('(hover: hover) and (pointer: fine)').matches);
-  }, []);
 
   return (
     <ClickSpark sparkColor="#ffffff" sparkSize={10} sparkRadius={22} sparkCount={8} duration={450}>
-      {fine && <TargetCursor targetSelector=".cursor-target" cursorColor="#ffffff" />}
       <Nav />
       <main>
         <Hero />

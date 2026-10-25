@@ -55,10 +55,3 @@ a {
   color: var(--bg);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  body,
-  a,
-  button {
-    cursor: none;
-  }
-}

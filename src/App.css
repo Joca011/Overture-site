@@ -46,13 +46,18 @@
   display: inline-block;
   transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.btn:hover {
+.btn:hover,
+.btn--ghost:hover {
   background: #e6e6e6;
   border-color: #e6e6e6;
+  color: var(--bg);
   transform: translateY(-2px);
 }
 .btn:hover > span[aria-hidden='true'] {
   transform: translateX(3px);
+}
+.btn:hover > .btn__down {
+  transform: translateY(3px);
 }
 .btn:active {
   transform: translateY(0);
@@ -69,11 +74,6 @@
   background: transparent;
   color: var(--fg);
   border-color: var(--line);
-}
-.btn--ghost:hover {
-  background: var(--fg);
-  color: var(--bg);
-  border-color: var(--fg);
 }
 @media (prefers-reduced-motion: reduce) {
   .btn,
@@ -303,11 +303,22 @@
   color: #c7c7c7;
   line-height: 1.4;
 }
+/* Os dois botões do topo têm sempre a mesma largura (a do maior) e a mesma altura */
 .hero__cta {
-  display: flex;
-  flex-wrap: wrap;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
   gap: 14px;
   margin-top: 40px;
+}
+.hero__cta .btn {
+  justify-content: center;
+}
+@media (max-width: 420px) {
+  .hero__cta {
+    display: grid;
+    grid-auto-flow: row;
+  }
 }
 .hero__scroll {
   position: absolute;

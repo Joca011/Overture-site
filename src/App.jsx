@@ -247,7 +247,7 @@ function Hero() {
             Iniciar um projeto <span aria-hidden="true">→</span>
           </a>
           <a href="#projetos" className="btn btn--ghost">
-            Ver projetos
+            Ver projetos <span aria-hidden="true" className="btn__down">↓</span>
           </a>
         </motion.div>
       </motion.div>

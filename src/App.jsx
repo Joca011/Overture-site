@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence, useInView, useScroll, useTransform, useMotionValueEvent } from 'motion/react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent } from 'motion/react';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -13,7 +13,6 @@ import ScrollVelocity from './rb/ScrollVelocity';
 import CountUp from './rb/CountUp';
 import ScrollStack, { ScrollStackItem } from './rb/ScrollStack';
 import SpotlightCard from './rb/SpotlightCard';
-import DriftWall from './rb/DriftWall';
 import Magnet from './rb/Magnet';
 import LogoLoop from './rb/LogoLoop';
 import AnimatedContent from './rb/AnimatedContent';
@@ -310,7 +309,7 @@ function Services() {
   );
 }
 
-/* ───────── Projetos (DriftWall + grade filtrável + visualização ampliada) ───────── */
+/* ───────── Projetos (fileiras em movimento + grade filtrável + visualização ampliada) ───────── */
 const img = (w, size = '') => `work/${w.slug}${size}.webp`;
 
 function Lightbox({ index, onClose, onNav }) {
@@ -380,55 +379,66 @@ function Projects() {
   const [filter, setFilter] = useState('Todos');
   const [open, setOpen] = useState(null);
   const list = filter === 'Todos' ? WORKS : WORKS.filter(w => w.cat === filter);
-  const wallItems = WORKS.map(w => ({ image: img(w, '-sm'), title: w.name }));
+  const rowLogos = useMemo(
+    () =>
+      [WORKS.slice(0, 5), WORKS.slice(5, 10), WORKS.slice(10, 15)].map(row =>
+        row.map(w => ({
+          title: w.name,
+          ariaLabel: w.name,
+          node: (
+            <button type="button" className="mcard" onClick={() => setOpen(WORKS.indexOf(w))} aria-label={`Ver ${w.name}`}>
+              <img src={img(w, '-sm')} alt="" loading="lazy" draggable={false} />
+              <span className="mcard__tag">
+                <strong>{w.name}</strong>
+                <small>{w.segment}</small>
+              </span>
+            </button>
+          )
+        }))
+      ),
+    []
+  );
   const close = useCallback(() => setOpen(null), []);
   const nav = useCallback(d => setOpen(i => (i + d + WORKS.length) % WORKS.length), []);
-  const wallRef = useRef(null);
-  const wallNear = useInView(wallRef, { margin: '300px 0px' });
 
   return (
     <section className="projects" id="projetos">
-      <div className="projects__wall" ref={wallRef}>
-        {wallNear && (
-        <DriftWall
-          items={wallItems}
-          columns={5}
-          tileWidth={360}
-          tileHeight={201}
-          gap={22}
-          radius={14}
-          tilt={20}
-          turn={-14}
-          depth={140}
-          speed={26}
-          variance={0.5}
-          parallax={0.5}
-          lift={50}
-          dim={0.95}
-          fade={0.55}
-          overlayColor="#000000"
-        />
-        )}
-        <div className="projects__intro wrap">
-          <p className="label">( Projetos )</p>
-          <h2 className="h2 projects__title">
-            <SplitText
-              tag="span"
-              text="Sites que criamos na Overture"
-              splitType="words"
-              delay={80}
-              textAlign="left"
-              effect="blur"
-              className="h2__split"
-            />
-          </h2>
-          <p className="projects__lead">
-            {WORKS.length} projetos em {WORK_CATEGORIES.length - 1} áreas: saúde, alimentação, serviços, varejo e tecnologia.
-          </p>
-          <a href="#portfolio" className="btn btn--ghost">
-            Ver todos os projetos ↓
-          </a>
-        </div>
+      <div className="wrap projects__intro">
+        <p className="label">( Projetos )</p>
+        <h2 className="h2 projects__title">
+          <SplitText
+            tag="span"
+            text="Sites que criamos na Overture"
+            splitType="words"
+            delay={80}
+            textAlign="left"
+            effect="blur"
+            className="h2__split"
+          />
+        </h2>
+        <p className="projects__lead">
+          {WORKS.length} projetos em {WORK_CATEGORIES.length - 1} áreas: saúde, alimentação, serviços, varejo e tecnologia. Clique em
+          qualquer tela para ver de perto.
+        </p>
+      </div>
+
+      <div className="mrows" aria-label="Telas dos projetos em movimento">
+        {rowLogos.map((logos, i) => (
+          <LogoLoop
+            key={i}
+            logos={logos}
+            direction={i % 2 ? 'right' : 'left'}
+            speed={[46, 38, 52][i]}
+            gap={20}
+            logoHeight={200}
+            fadeOut
+            fadeOutWidth={0.08}
+            pauseOnHover
+            scrollBoost={1.2}
+            intro={false}
+            ariaLabel={`Projetos, fileira ${i + 1}`}
+          />
+        ))}
       </div>
 
       <div className="wrap portfolio" id="portfolio">
